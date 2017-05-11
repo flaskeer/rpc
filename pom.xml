@@ -175,6 +175,9 @@
         <module>rpc-registry</module>
         <module>rpc-registry-zookeeper</module>
         <module>rpc-registry-curator</module>
+        <module>rpc-sample-server</module>
+        <module>rpc-sample-client</module>
+        <module>rpc-sample-api</module>
     </modules>
 
 </project>

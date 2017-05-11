@@ -2,7 +2,7 @@ package com.asterisk.rpc.sample.client;
 
 import com.asterisk.rpc.client.RpcProxy;
 import com.asterisk.rpc.sample.api.HelloService;
-import com.xxx.rpc.sample.api.Person;
+import com.asterisk.rpc.sample.api.Person;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
