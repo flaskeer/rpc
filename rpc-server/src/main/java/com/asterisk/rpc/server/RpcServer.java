@@ -22,12 +22,6 @@ import org.springframework.context.ApplicationContextAware;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * RPC 服务器（用于发布 RPC 服务）
- *
- * @author huangyong
- * @since 1.0.0
- */
 public class RpcServer implements ApplicationContextAware, InitializingBean {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RpcServer.class);

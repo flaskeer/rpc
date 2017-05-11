@@ -13,12 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
-/**
- * RPC 服务端处理器（用于处理 RPC 请求）
- *
- * @author huangyong
- * @since 1.0.0
- */
+
 public class RpcServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RpcServerHandler.class);

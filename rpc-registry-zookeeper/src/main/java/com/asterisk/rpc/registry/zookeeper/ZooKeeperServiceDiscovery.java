@@ -9,12 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-/**
- * 基于 ZooKeeper 的服务发现接口实现
- *
- * @author huangyong
- * @since 1.0.0
- */
+
 public class ZooKeeperServiceDiscovery implements ServiceDiscovery {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ZooKeeperServiceDiscovery.class);

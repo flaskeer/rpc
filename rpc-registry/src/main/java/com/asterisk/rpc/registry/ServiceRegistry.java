@@ -1,11 +1,6 @@
 package com.asterisk.rpc.registry;
 
-/**
- * 服务注册接口
- *
- * @author huangyong
- * @since 1.0.0
- */
+
 public interface ServiceRegistry {
 
     /**

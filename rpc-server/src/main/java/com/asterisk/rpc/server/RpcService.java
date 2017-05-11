@@ -7,12 +7,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * RPC 服务注解（标注在服务实现类上）
- *
- * @author huangyong
- * @since 1.0.0
- */
+
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Component

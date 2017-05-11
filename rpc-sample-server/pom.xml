@@ -59,7 +59,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib</classpathPrefix>
-                            <mainClass>com.xxx.rpc.sample.server.RpcBootstrap</mainClass>
+                            <mainClass>com.asterisk.rpc.sample.server.RpcBootstrap</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

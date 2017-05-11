@@ -12,12 +12,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * RPC 客户端（用于发送 RPC 请求）
- *
- * @author huangyong
- * @since 1.0.0
- */
+
 public class RpcClient extends SimpleChannelInboundHandler<RpcResponse> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RpcClient.class);

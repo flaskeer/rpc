@@ -68,7 +68,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib</classpathPrefix>
-                            <mainClass>com.xxx.rpc.sample.client.HelloClient</mainClass>
+                            <mainClass>com.asterisk.rpc.sample.client.HelloClient</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

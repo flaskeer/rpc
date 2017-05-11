@@ -5,12 +5,7 @@ import org.I0Itec.zkclient.ZkClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * 基于 ZooKeeper 的服务注册接口实现
- *
- * @author huangyong
- * @since 1.0.0
- */
+
 public class ZooKeeperServiceRegistry implements ServiceRegistry {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ZooKeeperServiceRegistry.class);
