@@ -25,14 +25,11 @@ public class HelloClient4 {
             long start = System.currentTimeMillis();
 
             for (int i = 0; i < loopCount; i++) {
-                executor.submit(new Runnable() {
-                    @Override
-                    public void run() {
-                        HelloService helloService = rpcProxy.create(HelloService.class);
-                        String result = helloService.hello("World");
-                        System.out.println(result);
-                        latch.countDown();
-                    }
+                executor.submit(() -> {
+                    HelloService helloService = rpcProxy.create(HelloService.class);
+                    String result = helloService.hello("World");
+                    System.out.println(result);
+                    latch.countDown();
                 });
             }
             latch.await();
