@@ -7,6 +7,7 @@ import com.asterisk.rpc.registry.ServiceDiscovery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.UUID;
 
@@ -18,6 +19,7 @@ public class RpcProxy {
     private String serviceAddress;
 
     private ServiceDiscovery serviceDiscovery;
+
 
     public RpcProxy(String serviceAddress) {
         this.serviceAddress = serviceAddress;
@@ -39,34 +41,19 @@ public class RpcProxy {
                 interfaceClass.getClassLoader(),
                 new Class<?>[]{interfaceClass},
                 (proxy, method, args) -> {
-                    // 创建 RPC 请求对象并设置请求属性
-                    RpcRequest request = new RpcRequest();
-                    request.setRequestId(UUID.randomUUID().toString());
-                    request.setInterfaceName(method.getDeclaringClass().getName());
-                    request.setServiceVersion(serviceVersion);
-                    request.setMethodName(method.getName());
-                    request.setParameterTypes(method.getParameterTypes());
-                    request.setParameters(args);
-                    // 获取 RPC 服务地址
-                    if (serviceDiscovery != null) {
-                        String serviceName = interfaceClass.getName();
-                        if (StringUtil.isNotEmpty(serviceVersion)) {
-                            serviceName += "-" + serviceVersion;
-                        }
-                        serviceAddress = serviceDiscovery.discover(serviceName);
-                        LOGGER.debug("discover service: {} => {}", serviceName, serviceAddress);
-                    }
-                    if (StringUtil.isEmpty(serviceAddress)) {
-                        throw new RuntimeException("server address is empty");
-                    }
-                    // 从 RPC 服务地址中解析主机名与端口号
-                    String[] array = StringUtil.split(serviceAddress, ":");
+                    RpcRequest request = request(serviceVersion, method, args);
+                    String[] array = discovery(interfaceClass, serviceVersion);
+
                     String host = array[0];
                     int port = Integer.parseInt(array[1]);
-                    // 创建 RPC 客户端对象并发送 RPC 请求
-                    RpcClient client = new RpcClient(host, port);
                     long time = System.currentTimeMillis();
-                    RpcResponse response = client.send(request);
+                    ClientInitializer clientInitializer = new ClientInitializer(host,port);
+                    RpcResponse response = null;
+                    try {
+                       response = clientInitializer.send(request);
+                    } catch (Exception e) {
+                        clientInitializer.close();
+                    }
                     LOGGER.debug("time: {}ms", System.currentTimeMillis() - time);
                     if (response == null) {
                         throw new RuntimeException("response is null");
@@ -79,5 +66,34 @@ public class RpcProxy {
                     }
                 }
         );
+    }
+
+    private String[] discovery(Class<?> interfaceClass, String serviceVersion) {
+        // 获取 RPC 服务地址
+        if (serviceDiscovery != null) {
+            String serviceName = interfaceClass.getName();
+            if (StringUtil.isNotEmpty(serviceVersion)) {
+                serviceName += "-" + serviceVersion;
+            }
+            serviceAddress = serviceDiscovery.discover(serviceName);
+            LOGGER.debug("discover service: {} => {}", serviceName, serviceAddress);
+        }
+        if (StringUtil.isEmpty(serviceAddress)) {
+            throw new RuntimeException("server address is empty");
+        }
+        // 从 RPC 服务地址中解析主机名与端口号
+        return StringUtil.split(serviceAddress, ":");
+    }
+
+    private RpcRequest request(String serviceVersion, Method method, Object[] args) {
+        // 创建 RPC 请求对象并设置请求属性
+        RpcRequest request = new RpcRequest();
+        request.setRequestId(UUID.randomUUID().toString());
+        request.setInterfaceName(method.getDeclaringClass().getName());
+        request.setServiceVersion(serviceVersion);
+        request.setMethodName(method.getName());
+        request.setParameterTypes(method.getParameterTypes());
+        request.setParameters(args);
+        return request;
     }
 }
