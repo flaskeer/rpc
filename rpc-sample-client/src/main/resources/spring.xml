@@ -9,8 +9,15 @@
 
     <context:property-placeholder location="classpath:rpc.properties"/>
 
-    <bean id="serviceDiscovery" class="com.asterisk.rpc.registry.zookeeper.ZooKeeperServiceDiscovery">
+    <!--<bean id="serviceDiscovery" class="com.asterisk.rpc.registry.zookeeper.ZooKeeperServiceDiscovery">-->
+        <!--<constructor-arg name="zkAddress" value="${rpc.registry_address}"/>-->
+    <!--</bean>-->
+
+
+    <bean id="serviceDiscovery" class="com.asterisk.rpc.registry.curator.CuratorServiceDiscovery">
         <constructor-arg name="zkAddress" value="${rpc.registry_address}"/>
+        <constructor-arg name="connTimeout" value="10000" />
+        <constructor-arg name="sessionTimeout" value="10000" />
     </bean>
 
     <bean id="rpcProxy" class="com.asterisk.rpc.client.RpcProxy">

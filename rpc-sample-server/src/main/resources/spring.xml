@@ -11,8 +11,13 @@
 
     <context:property-placeholder location="classpath:rpc.properties"/>
 
-    <bean id="serviceRegistry" class="com.asterisk.rpc.registry.zookeeper.ZooKeeperServiceRegistry">
+    <!--<bean id="serviceRegistry" class="com.asterisk.rpc.registry.zookeeper.ZooKeeperServiceRegistry">-->
+        <!--<constructor-arg name="zkAddress" value="${rpc.registry_address}"/>-->
+    <!--</bean>-->
+
+    <bean id="serviceRegistry" class="com.asterisk.rpc.registry.curator.CuratorServiceRegistry">
         <constructor-arg name="zkAddress" value="${rpc.registry_address}"/>
+        <constructor-arg name="timeout" value="100000" />
     </bean>
 
     <bean id="rpcServer" class="com.asterisk.rpc.server.RpcServer">

@@ -36,6 +36,11 @@
             <artifactId>rpc-client</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.asterisk.rpc</groupId>
+            <artifactId>rpc-registry-curator</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

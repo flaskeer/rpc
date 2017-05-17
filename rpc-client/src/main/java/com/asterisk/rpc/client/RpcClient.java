@@ -20,6 +20,8 @@ public class RpcClient extends SimpleChannelInboundHandler<RpcResponse> {
     private final String host;
     private final int port;
 
+    private EventLoopGroup group;
+
     private RpcResponse response;
 
     public RpcClient(String host, int port) {
@@ -66,5 +68,10 @@ public class RpcClient extends SimpleChannelInboundHandler<RpcResponse> {
         } finally {
             group.shutdownGracefully();
         }
+    }
+
+
+    private void close() {
+
     }
 }
