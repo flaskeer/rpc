@@ -179,6 +179,7 @@
         <module>rpc-sample-server</module>
         <module>rpc-sample-client</module>
         <module>rpc-sample-api</module>
+        <module>rpc-akka</module>
 
     </modules>
 
