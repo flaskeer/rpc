@@ -2,11 +2,14 @@ package com.asterisk.rpc.client;
 
 import com.asterisk.rpc.common.bean.RpcRequest;
 import com.asterisk.rpc.common.bean.RpcResponse;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.*;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.SocketAddress;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,10 +25,24 @@ public class RpcSender extends SimpleChannelInboundHandler<RpcResponse> {
 
     private Map<String, Thread> waiterMap = new ConcurrentHashMap<>();
 
+    private SocketAddress remoterPeer;
+
+    private Channel channel;
+
+
+    public Channel getChannel() {
+        return channel;
+    }
+
+    public SocketAddress getRemoterPeer() {
+        return remoterPeer;
+    }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         log.info("client channel is ready...");
+        super.channelActive(ctx);
+        this.remoterPeer = channel.remoteAddress();
     }
 
     @Override
@@ -35,6 +52,17 @@ public class RpcSender extends SimpleChannelInboundHandler<RpcResponse> {
         synchronized (thread) {
             thread.notify();
         }
+    }
+
+
+    @Override
+    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+        super.channelRegistered(ctx);
+        this.channel = ctx.channel();
+    }
+
+    public void close() {
+        channel.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
     }
 
     public RpcResponse send(RpcRequest request, Channel channel) throws InterruptedException {
@@ -50,4 +78,10 @@ public class RpcSender extends SimpleChannelInboundHandler<RpcResponse> {
         waiterMap.remove(id);
         return responseMap.remove(id);
     }
+
+//    public ListenableFuture asyncSend(RpcRequest request) {
+//        RpcClient.submit(() -> {
+//            channel.writeAndFlush(request);
+//        });
+//    }
 }

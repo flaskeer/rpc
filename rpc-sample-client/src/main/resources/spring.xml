@@ -22,7 +22,7 @@
 
 
 
-    <bean id="rpcProxy" class="com.asterisk.rpc.client.RpcProxy">
+    <bean id="rpcProxy" class="com.asterisk.rpc.client.RpcClient">
         <constructor-arg name="serviceDiscovery" ref="serviceDiscovery"/>
     </bean>
 

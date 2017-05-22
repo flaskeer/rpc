@@ -14,6 +14,10 @@
 
     <artifactId>rpc-client</artifactId>
 
+    <properties>
+        <guava.version>21.0</guava.version>
+    </properties>
+
     <dependencies>
         <!-- RPC Common -->
         <dependency>
@@ -26,6 +30,11 @@
             <groupId>com.asterisk.rpc</groupId>
             <artifactId>rpc-registry-zookeeper</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
         </dependency>
     </dependencies>
 

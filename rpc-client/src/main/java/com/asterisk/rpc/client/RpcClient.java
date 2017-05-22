@@ -1,31 +1,37 @@
 package com.asterisk.rpc.client;
 
+import com.asterisk.rpc.client.proxy.RpcProxy;
 import com.asterisk.rpc.common.bean.RpcRequest;
-import com.asterisk.rpc.common.bean.RpcResponse;
 import com.asterisk.rpc.common.util.StringUtil;
 import com.asterisk.rpc.registry.ServiceDiscovery;
+import com.google.common.util.concurrent.MoreExecutors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
-public class RpcProxy {
+public class RpcClient {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RpcProxy.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RpcClient.class);
 
     private String serviceAddress;
 
     private ServiceDiscovery serviceDiscovery;
 
+    private static ExecutorService executor = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 10));
 
-    public RpcProxy(String serviceAddress) {
+
+    public RpcClient(String serviceAddress) {
         this.serviceAddress = serviceAddress;
     }
 
-    public RpcProxy(ServiceDiscovery serviceDiscovery) {
+    public RpcClient(ServiceDiscovery serviceDiscovery) {
         this.serviceDiscovery = serviceDiscovery;
     }
 
@@ -40,32 +46,11 @@ public class RpcProxy {
         return (T) Proxy.newProxyInstance(
                 interfaceClass.getClassLoader(),
                 new Class<?>[]{interfaceClass},
-                (proxy, method, args) -> {
-                    RpcRequest request = request(serviceVersion, method, args);
-                    String[] array = discovery(interfaceClass, serviceVersion);
+                new RpcProxy<>(interfaceClass));
+    }
 
-                    String host = array[0];
-                    int port = Integer.parseInt(array[1]);
-                    long time = System.currentTimeMillis();
-                    ClientInitializer clientInitializer = new ClientInitializer(host,port);
-                    RpcResponse response = null;
-                    try {
-                       response = clientInitializer.send(request);
-                    } catch (Exception e) {
-                        clientInitializer.close();
-                    }
-                    LOGGER.debug("time: {}ms", System.currentTimeMillis() - time);
-                    if (response == null) {
-                        throw new RuntimeException("response is null");
-                    }
-                    // 返回 RPC 响应结果
-                    if (response.hasException()) {
-                        throw response.getException();
-                    } else {
-                        return response.getResult();
-                    }
-                }
-        );
+    public static void submit(Runnable task) {
+        executor.submit(task);
     }
 
     private String[] discovery(Class<?> interfaceClass, String serviceVersion) {

@@ -12,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 
 public class RpcServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
@@ -20,24 +22,31 @@ public class RpcServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
 
     private final Map<String, Object> handlerMap;
 
+    private Executor executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 10);
+
     public RpcServerHandler(Map<String, Object> handlerMap) {
         this.handlerMap = handlerMap;
     }
 
     @Override
     public void channelRead0(final ChannelHandlerContext ctx, RpcRequest request) throws Exception {
-        // 创建并初始化 RPC 响应对象
-        RpcResponse response = new RpcResponse();
-        response.setRequestId(request.getRequestId());
-        try {
-            Object result = handle(request);
-            response.setResult(result);
-        } catch (Exception e) {
-            LOGGER.error("handle result failure", e);
-            response.setException(e);
-        }
-        // 写入 RPC 响应对象并自动关闭连接
-        ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+        executor.execute(() -> {
+            LOGGER.debug("Receive Request:{}", request.getRequestId());
+            // 创建并初始化 RPC 响应对象
+            RpcResponse response = new RpcResponse();
+            response.setRequestId(request.getRequestId());
+            try {
+                Object result = handle(request);
+                response.setResult(result);
+            } catch (Exception e) {
+                LOGGER.error("handle result failure", e);
+                response.setException(e);
+            }
+            // 写入 RPC 响应对象并自动关闭连接
+            ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE).addListener((ChannelFutureListener) future -> {
+                LOGGER.debug("Send Response for client,requestId is:{}", request.getRequestId());
+            });
+        });
     }
 
     private Object handle(RpcRequest request) throws Exception {

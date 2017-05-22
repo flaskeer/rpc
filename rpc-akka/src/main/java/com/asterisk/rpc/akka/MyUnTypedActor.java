@@ -3,6 +3,7 @@ package com.asterisk.rpc.akka;
 import akka.actor.*;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
+import akka.japi.pf.ReceiveBuilder;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
 import scala.concurrent.Future;
@@ -37,6 +38,8 @@ public class MyUnTypedActor extends AbstractActor {
                 })
                 .matchEquals("hehe", s -> {
                     System.out.println("hello greeter, your message is:" + s);
+                    context().become(receiveBuilder().build().onMessage(),true);
+                    System.out.println("view is: " + context().children());
                 })
                 .matchEquals("kill",s -> {
                     getContext().stop(child);
